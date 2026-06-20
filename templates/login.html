@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Sign in — JobMatch{% endblock %}
+{% block content %}
+<div class="center-shell">
+  <div class="auth-card">
+    <h1 class="page-title">Welcome back</h1>
+    <p class="page-sub">Sign in to your dashboard.</p>
+
+    <a href="{{ url_for('login_google') }}" class="btn btn-google">
+      Continue with Google
+    </a>
+
+    <div class="divider-or">or</div>
+
+    <form method="POST">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="Your password">
+      </div>
+      <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+  </div>
+  <p class="auth-foot">New here? <a href="{{ url_for('signup') }}">Create an account</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Upload your resume — JobMatch{% endblock %}
+{% block content %}
+<div class="center-shell">
+  <div class="auth-card">
+    <h1 class="page-title">Upload your resume</h1>
+    <p class="page-sub">
+      This is a one-time step. We'll pull your skills, experience, and
+      education from it automatically — you won't need to retype any of this.
+    </p>
+
+    <form method="POST" enctype="multipart/form-data">
+      <div class="field">
+        <label for="resume">Resume file</label>
+        <input type="file" id="resume" name="resume" accept=".pdf,.docx" required>
+        <p class="field-hint">PDF or DOCX, up to 8MB. Text-based files work best (not scanned images).</p>
+      </div>
+      <button type="submit" class="btn btn-primary">Upload and continue</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

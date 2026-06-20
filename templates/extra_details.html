@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}A few more details — JobMatch{% endblock %}
+{% block content %}
+<div class="center-shell">
+  <div class="auth-card">
+    <h1 class="page-title">Almost done</h1>
+    <p class="page-sub">
+      A few things your resume doesn't usually say. Fill this once — you can
+      change it later from your profile, but you won't be asked again.
+    </p>
+
+    <form method="POST">
+      <div class="field">
+        <label for="preferred_role">Preferred role</label>
+        <input type="text" id="preferred_role" name="preferred_role" placeholder="e.g. Backend Developer" required>
+      </div>
+      <div class="field">
+        <label for="years_of_experience">Years of experience</label>
+        <input type="text" id="years_of_experience" name="years_of_experience" placeholder="e.g. 2" required>
+      </div>
+      <div class="field">
+        <label for="preferred_location">Preferred location</label>
+        <input type="text" id="preferred_location" name="preferred_location" placeholder="e.g. Bengaluru, or Remote">
+      </div>
+      <div class="field">
+        <label for="expected_salary">Expected salary (optional)</label>
+        <input type="text" id="expected_salary" name="expected_salary" placeholder="e.g. ₹8–12 LPA">
+      </div>
+      <div class="field">
+        <label for="notice_period">Notice period (optional)</label>
+        <input type="text" id="notice_period" name="notice_period" placeholder="e.g. Immediate, 30 days">
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="notify_email" name="notify_email" checked>
+        <label for="notify_email" style="margin:0;">Email me when a job matches strongly</label>
+      </div>
+
+      <div class="field">
+        <label for="match_threshold">Alert me at this match % or higher</label>
+        <input type="number" id="match_threshold" name="match_threshold" value="75" min="50" max="100">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Finish setup</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

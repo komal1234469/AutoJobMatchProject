@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — JobMatch{% endblock %}
+{% block content %}
+<div class="wide-shell">
+  <h1 class="page-title">Find your signal</h1>
+  <p class="page-sub">Type a company or role. We'll score every result against your saved profile.</p>
+
+  <div class="profile-summary-bar">
+    <span><span class="label">Profile:</span> {{ profile.full_name or 'Unnamed' }} · {{ profile.get_skills()|length }} skills detected</span>
+    <a href="{{ url_for('edit_profile') }}" class="btn btn-secondary btn-sm">Edit</a>
+  </div>
+
+  <form id="search-form" class="search-row">
+    <input type="text" id="search-input" placeholder="e.g. Google, or Python Developer" required>
+    <button type="submit" class="btn btn-primary" style="width:auto; padding:0 24px;" id="search-btn">Search</button>
+  </form>
+
+  <div id="results-container">
+    <div class="empty-state">Search for a company or role to see ranked matches here.</div>
+  </div>
+</div>
+
+<script>
+const searchForm = document.getElementById('search-form');
+const resultsContainer = document.getElementById('results-container');
+const searchBtn = document.getElementById('search-btn');
+
+function signalColor(score) {
+  if (score >= 75) return 'var(--signal-high)';
+  if (score >= 50) return 'var(--signal-mid)';
+  return 'var(--signal-low)';
+}
+
+function renderResults(results) {
+  if (!results.length) {
+    resultsContainer.innerHTML = '<div class="empty-state">No jobs found for that search. Try a broader term.</div>';
+    return;
+  }
+
+  resultsContainer.innerHTML = results.map(job => `
+    <div class="job-card" data-match-id="${job.match_id}">
+      <div class="job-card-top">
+        <div>
+          <p class="job-title">${job.title}</p>
+          <p class="job-meta">${job.company}${job.location ? ' · ' + job.location : ''}</p>
+        </div>
+        <div class="signal-block">
+          <div class="signal-score" style="color:${signalColor(job.score)}">${job.score}%</div>
+          <div class="signal-bar-track">
+            <div class="signal-bar-fill" style="width:${job.score}%; background:${signalColor(job.score)}"></div>
+          </div>
+        </div>
+      </div>
+      ${job.matched_skills.length ? `
+        <div class="matched-skills">
+          ${job.matched_skills.map(s => `<span class="skill-chip">${s}</span>`).join('')}
+        </div>
+      ` : ''}
+      <div class="job-card-actions">
+        <button class="btn btn-primary generate-btn" style="width:auto;" data-match-id="${job.match_id}">
+          Generate resume + cover letter
+        </button>
+        ${job.apply_url ? `<a href="${job.apply_url}" target="_blank" class="btn btn-secondary">View posting</a>` : ''}
+      </div>
+      <div class="generated-output" id="output-${job.match_id}"></div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.generate-btn').forEach(btn => {
+    btn.addEventListener('click', handleGenerate);
+  });
+}
+
+async function handleGenerate(e) {
+  const btn = e.target;
+  const matchId = btn.dataset.matchId;
+  const outputDiv = document.getElementById(`output-${matchId}`);
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+
+  try {
+    const res = await fetch(`/generate/${matchId}`, { method: 'POST' });
+    const data = await res.json();
+
+    if (data.error) {
+      outputDiv.innerHTML = `<p style="color:var(--danger); font-size:14px;">${data.error}</p>`;
+    } else {
+      outputDiv.innerHTML = `
+        <div class="generated-section">
+          <h4>Tailored resume summary</h4>
+          <pre>${data.resume_summary}</pre>
+        </div>
+        <div class="generated-section">
+          <h4>Cover letter</h4>
+          <pre>${data.cover_letter}</pre>
+        </div>
+        ${data.apply_url ? `<a href="${data.apply_url}" target="_blank" class="btn btn-primary" style="width:auto; display:inline-flex;">Open application →</a>` : ''}
+      `;
+    }
+    outputDiv.classList.add('visible');
+  } catch (err) {
+    outputDiv.innerHTML = `<p style="color:var(--danger); font-size:14px;">Something went wrong. Please try again.</p>`;
+    outputDiv.classList.add('visible');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = 'Generate resume + cover letter';
+}
+
+searchForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const query = document.getElementById('search-input').value.trim();
+  if (!query) return;
+
+  searchBtn.disabled = true;
+  searchBtn.innerHTML = '<span class="loading-spinner"></span>';
+  resultsContainer.innerHTML = '<div class="empty-state">Searching and scoring matches…</div>';
+
+  try {
+    const formData = new FormData();
+    formData.append('query', query);
+    const res = await fetch('/search', { method: 'POST', body: formData });
+    const data = await res.json();
+
+    if (data.error) {
+      resultsContainer.innerHTML = `<div class="empty-state" style="color:var(--danger);">${data.error}</div>`;
+    } else {
+      renderResults(data.results);
+    }
+  } catch (err) {
+    resultsContainer.innerHTML = '<div class="empty-state" style="color:var(--danger);">Search failed. Please try again.</div>';
+  }
+
+  searchBtn.disabled = false;
+  searchBtn.innerHTML = 'Search';
+});
+</script>
+{% endblock %}

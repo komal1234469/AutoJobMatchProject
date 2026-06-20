@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}JobMatch — Find your signal{% endblock %}
+{% block content %}
+<div class="center-shell" style="padding-top:120px; text-align:center; max-width:560px;">
+  <h1 class="page-title" style="font-size:38px;">Upload once. Apply in one click, forever.</h1>
+  <p class="page-sub" style="font-size:16px;">
+    JobMatch reads your resume a single time, then scores every new job against it,
+    drafts a tailored resume summary and cover letter on demand, and emails you
+    the moment something matches strongly. No retyping your skills, ever.
+  </p>
+  <div style="display:flex; gap:12px; justify-content:center; margin-top:28px;">
+    <a href="{{ url_for('signup') }}" class="btn btn-primary" style="width:auto; padding:14px 28px;">Get started</a>
+    <a href="{{ url_for('login') }}" class="btn btn-secondary" style="padding:14px 28px;">Sign in</a>
+  </div>
+</div>
+{% endblock %}

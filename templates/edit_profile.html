@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Edit profile — JobMatch{% endblock %}
+{% block content %}
+<div class="wide-shell" style="max-width:560px;">
+  <h1 class="page-title">Your profile</h1>
+  <p class="page-sub">Update anything here any time — this is what every search and match uses.</p>
+
+  <form method="POST">
+    <div class="field">
+      <label for="skills">Skills (comma-separated)</label>
+      <textarea id="skills" name="skills" rows="3">{{ skills }}</textarea>
+    </div>
+    <div class="field">
+      <label for="preferred_role">Preferred role</label>
+      <input type="text" id="preferred_role" name="preferred_role" value="{{ profile.preferred_role or '' }}">
+    </div>
+    <div class="field">
+      <label for="years_of_experience">Years of experience</label>
+      <input type="text" id="years_of_experience" name="years_of_experience" value="{{ profile.years_of_experience or '' }}">
+    </div>
+    <div class="field">
+      <label for="preferred_location">Preferred location</label>
+      <input type="text" id="preferred_location" name="preferred_location" value="{{ profile.preferred_location or '' }}">
+    </div>
+    <div class="field">
+      <label for="expected_salary">Expected salary</label>
+      <input type="text" id="expected_salary" name="expected_salary" value="{{ profile.expected_salary or '' }}">
+    </div>
+    <div class="field">
+      <label for="notice_period">Notice period</label>
+      <input type="text" id="notice_period" name="notice_period" value="{{ profile.notice_period or '' }}">
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="notify_email" name="notify_email" {% if profile.notify_email %}checked{% endif %}>
+      <label for="notify_email" style="margin:0;">Email me when a job matches strongly</label>
+    </div>
+
+    <div class="field">
+      <label for="match_threshold">Alert me at this match % or higher</label>
+      <input type="number" id="match_threshold" name="match_threshold" value="{{ profile.match_threshold }}" min="50" max="100">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save changes</button>
+  </form>
+
+  <p class="field-hint" style="margin-top:20px;">
+    Want to replace your resume entirely? <a href="{{ url_for('upload_resume') }}" style="color:var(--signal-high); font-weight:600;">Upload a new one</a>.
+  </p>
+</div>
+{% endblock %}
